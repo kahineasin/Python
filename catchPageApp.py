@@ -405,13 +405,12 @@ class PfCatcherForm:
           self.pfCatcher.login()
           self.isLogin=1
         
-          if self.startAfterLoginInt.get()==1:
-            html=self.pfCatcher.getHtml()
+          html=self.pfCatcher.getHtml()
+          lessonPage=self.pfCatcher.getPage(self.lessonUrlInputStr.get())      
+          self.pageInput.insert(1.0,html)
+          self.lessonInput.insert(1.0,lessonPage)
 
-            lessonPage=self.pfCatcher.getPage(self.lessonUrlInputStr.get())      
-            self.pageInput.insert(1.0,html)
-            self.lessonInput.insert(1.0,lessonPage)
-            
+          if self.startAfterLoginInt.get()==1:            
             self.playCurPage()
           else:
             self.loginInput.config(state='normal',text='开始学习')
