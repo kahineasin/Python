@@ -255,8 +255,8 @@ class PfCatcherForm:
     if self.lessonUrlInputStr.get().find('perfect.zhixueyun.com/#/study/subject/detail')>-1:
       self.lessonUrlType=1  #https://perfect.zhixueyun.com/#/study/subject/detail/8247851a-a8a1-446a-988d-51697e32114b
     else:
-      self.lessonUrlType=2  #https://perfect.zhixueyun.com/#/study/course/index
-      self.curLessonPage=1  #这种类型是分页的
+      self.lessonUrlType=2  #https://perfect.zhixueyun.com/#/study/course/index      
+      self.curLessonPage=int(BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .active')[0].get_text())  #这种类型是分页的
 
     # lessonPage=self.pfCatcher.getHtml()      
 
