@@ -1,3 +1,5 @@
+当前看到课程第7页
+
 改可选列表样式2:
 https://perfect.zhixueyun.com/#/study/course/index
 

@@ -309,6 +309,7 @@ class PfCatcherForm:
         if len(nextBtn)>0:
           tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(self.curLessonPage)
           nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
+          time.sleep(5)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
           nextBtn0.click()
           time.sleep(5)
         else:
