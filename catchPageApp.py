@@ -247,6 +247,25 @@ class PfCatcherForm:
     self.lessonCnt=len(self.lessons) 
 
     self.playLesson(self.pfCatcher) 
+
+  def goToPage(self):
+    nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
+    if len(nextBtn)>0:
+      return 1  #5页之前都是可以直接一次切换
+    #8页之后要一次一次切换
+    curP=5
+    while curP<=self.curLessonPage:
+      nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(curP))
+      if len(nextBtn)>0:
+        tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(curP)
+        nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
+        time.sleep(1)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
+        nextBtn0.click()
+        time.sleep(2)
+      if curP==self.curLessonPage:
+        return 1
+      curP+=1
+    return 0
   def playCurPage(self):
     self.startTime=datetime.datetime.now()
     self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
@@ -305,15 +324,16 @@ class PfCatcherForm:
       while hasPage==1:     
         self.doPlayCurPage()      
         self.curLessonPage+=1
-        nextBtn=BeautifulSoup(self.pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
-        if len(nextBtn)>0:
-          tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(self.curLessonPage)
-          nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
-          time.sleep(5)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
-          nextBtn0.click()
-          time.sleep(5)
-        else:
-          hasPage=0
+        hasPage=self.goToPage()
+        # nextBtn=BeautifulSoup(self.pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
+        # if len(nextBtn)>0:
+        #   tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(self.curLessonPage)
+        #   nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
+        #   time.sleep(5)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
+        #   nextBtn0.click()
+        #   time.sleep(5)
+        # else:
+        #   hasPage=0
 
     self.processInputStr.set("已完成")
     self.loginInput.config(state='normal',text='重新学习')
