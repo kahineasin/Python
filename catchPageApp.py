@@ -248,12 +248,28 @@ class PfCatcherForm:
 
     self.playLesson(self.pfCatcher) 
 
+  # def goToNextPage(self):
+  #   soup=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml')
+  #   idx=int(soup.select('.pagination .active')[0].get_text())  #这种类型是分页的
+  #   nextIdx=idx+1
+  #   nextBtn=soup.select('.pagination .item[data-page="{0}"]'.format(nextIdx))
+  #   if len(nextBtn)>0:
+  #     tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(nextIdx)
+  #     self.pfCatcher.driver.find_element_by_xpath(tmpstr).click()
+  #     time.sleep(2)
+  #     return 1  
+  #   else:
+  #     return 0
   def goToPage(self):
-    nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
+    # self.pfCatcher.getPage(self.lessonUrlInputStr.get())
+    # while self.goToNextPage()==1:
+      
+    # nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
+    nextBtn=BeautifulSoup(self.pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))#如果上一次也是在列表页,即url没变化的话,找第5页就已经找不到了
     if len(nextBtn)>0:
       return 1  #5页之前都是可以直接一次切换
     #8页之后要一次一次切换
-    curP=5
+    curP=int(BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .active')[0].get_text())+1
     while curP<=self.curLessonPage:
       nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(curP))
       if len(nextBtn)>0:
@@ -263,10 +279,13 @@ class PfCatcherForm:
         # time.sleep(1)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
         # nextBtn0.click()
         time.sleep(2)
-      if curP==self.curLessonPage:
-        return 1
+      else:
+        return 0
       curP+=1
-    return 0
+    return 1
+    # if curP>=self.curLessonPage:
+    #   return 1
+    # return 0
   def playCurPage(self):
     self.startTime=datetime.datetime.now()
     self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
@@ -381,6 +400,8 @@ class PfCatcherForm:
   #   if self.autoShutdownInt.get()==1:
   #     os.system('shutdown -s -f -t 59')
 
+  # def scriptClick(self,ele,idx):
+  #   self.pfCatcher.driver.execute_script("arguments[0].click();".format(str(idx)), ele)
   def playLesson(self,pfCatcher):  
     self.curIdx=0
     cnt=len(self.lessons)
@@ -418,6 +439,14 @@ class PfCatcherForm:
           if goawayDom is not None:
             self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']/div[@class='btn-ok']").click()
             time.sleep(2)
+            continue
+          
+          replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
+          if replayDom is not None:
+            finishCnt=1
+
+            # self.pfCatcher.driver.find_element_by_xpath("//div[@class='videojs-referse-btn']").click()
+            # time.sleep(2)
             continue
           
           time.sleep(20)
