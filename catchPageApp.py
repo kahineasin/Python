@@ -258,9 +258,10 @@ class PfCatcherForm:
       nextBtn=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .item[data-page="{0}"]'.format(curP))
       if len(nextBtn)>0:
         tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(curP)
-        nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
-        time.sleep(1)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
-        nextBtn0.click()
+        self.pfCatcher.driver.find_element_by_xpath(tmpstr).click()
+        # nextBtn0 = self.pfCatcher.driver.find_element_by_xpath(tmpstr)
+        # time.sleep(1)#这里不延迟好像会有问题,因为find_element_by_xpath调用后页面会刷新一下的
+        # nextBtn0.click()
         time.sleep(2)
       if curP==self.curLessonPage:
         return 1
@@ -393,12 +394,33 @@ class PfCatcherForm:
         while finishCnt==0:
           learnedTime=datetime.datetime.now()-self.startTime
           self.learnedTimeInputStr.set('{0}分'.format(round(learnedTime.seconds/60,2)))
-          finishDom=BeautifulSoup(pfCatcher.getHtml(), 'lxml').find('div', text="您已完成该课程的学习")
+          soup=BeautifulSoup(pfCatcher.getHtml(), 'lxml')
+          finishDom=soup.find('div', text="您已完成该课程的学习")
 
           if finishDom is not None:
             finishCnt=1
-          else:
-            time.sleep(20)
+            continue
+          
+          netErrorDom=soup.find('div', text="网络不稳定，请刷新重试")
+          if netErrorDom is not None:
+            #self.pfCatcher.driver.refresh()
+
+            netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']/div[@class='slow-img']")
+            # time.sleep(2)
+            # netErrorEle.click()
+
+            # webdriver.ActionChains(self.pfCatcher.driver).move_to_element(netErrorEle ).click(netErrorEle ).perform()
+            self.pfCatcher.driver.execute_script("arguments[0].click();", netErrorEle)
+            time.sleep(2)
+            continue
+          
+          goawayDom=soup.find('p', text="亲爱的学员，目前学习正在计时中，请不要走开哦!")
+          if goawayDom is not None:
+            self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']/div[@class='btn-ok']").click()
+            time.sleep(2)
+            continue
+          
+          time.sleep(20)
 
       self.curIdx+=1
 
