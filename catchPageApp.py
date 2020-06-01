@@ -382,19 +382,6 @@ class PfCatcherForm:
 
       self.curIdx+=1
 
-    # if self.lessonUrlType==2:#找下一页      
-    #   self.curLessonPage+=1
-    #   nextBtn=BeautifulSoup(pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="'+self.curLessonPage+'"]')
-    #   if len(nextBtn)>0:
-    #     nextBtn0 = pfCatcher.driver.find_element_by_xpath("//div[@class='pagination']/div[data-page='"+self.curLessonPage+"']")
-    #     nextBtn0.click()
-    #     time.sleep(5)
-
-    # self.processInputStr.set("已完成")
-    # self.loginInput.config(state='normal',text='重新学习')
-    # if self.autoShutdownInt.get()==1:
-    #   os.system('shutdown -s -f -t 59') #取消关机命令 shutdown /a
-
   def login(self):
       if tk.messagebox.askokcancel(title='Hi', message=self.userNameInputStr.get()):
         self.loginInput.config(state="disabled")
