@@ -170,6 +170,7 @@ class PfCatcherForm:
     self.lessonListInput.pack()
 
     self.isLogin=0
+    self.pfCatcher=None
     # 第6步，主窗口循环显示
     # self.root=window
     # self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -288,7 +289,7 @@ class PfCatcherForm:
     # return 0
   def playCurPage(self):
     self.startTime=datetime.datetime.now()
-    self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
+    # self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
     
     #判断是哪一种课程页,类型参考E:\web\html_all\study\自动在线学习程序_readme.txt
     if self.lessonUrlInputStr.get().find('perfect.zhixueyun.com/#/study/subject/detail')>-1:
@@ -442,7 +443,7 @@ class PfCatcherForm:
             continue
           
           replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
-          if replayDom is not None:
+          if replayDom is not None and 'vjs-hidden' not in replayDom.get('class'):
             finishCnt=1
 
             # self.pfCatcher.driver.find_element_by_xpath("//div[@class='videojs-referse-btn']").click()
@@ -458,6 +459,7 @@ class PfCatcherForm:
         self.loginInput.config(state="disabled")
         # self.playCurPageInput.config(state="disabled")
         if self.isLogin==1:#如果是已登陆的状态,就播放当前打开的页面,而不是lessonUrlInputStr
+          self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
           self.playCurPage()
         else :
           self.pfCatcher=PFPageCatcher(self.userNameInputStr.get(),self.userPwdInputStr.get())
