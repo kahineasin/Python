@@ -269,6 +269,12 @@ class PfCatcherForm:
     nextBtn=BeautifulSoup(self.pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))#如果上一次也是在列表页,即url没变化的话,找第5页就已经找不到了
     if len(nextBtn)>0:
       return 1  #5页之前都是可以直接一次切换
+
+    #有时页面超时打不开,页面都是空的--benjamin20200603
+    while len(BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .active'))<1:
+      return -1
+      # self.pfCatcher.getPage(self.lessonUrlInputStr.get())
+      
     #8页之后要一次一次切换
     curP=int(BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .active')[0].get_text())+1
     while curP<=self.curLessonPage:
@@ -346,6 +352,8 @@ class PfCatcherForm:
         self.doPlayCurPage()      
         self.curLessonPage+=1
         hasPage=self.goToPage()
+        while hasPage==-1:#网络错误重试
+          hasPage=self.goToPage()
         # nextBtn=BeautifulSoup(self.pfCatcher.getPage(self.lessonUrlInputStr.get()), 'lxml').select('.pagination .item[data-page="{0}"]'.format(self.curLessonPage))
         # if len(nextBtn)>0:
         #   tmpstr="//div[@class='pagination']/div[@data-page='{0}']".format(self.curLessonPage)
