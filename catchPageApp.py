@@ -155,6 +155,10 @@ class PfCatcherForm:
     startAfterLoginInput = tk.Checkbutton(window,text = "登陆后自动开始",variable = self.startAfterLoginInt,onvalue = 1,offvalue = 0)
     startAfterLoginInput.pack()
 
+    self.autoPunchLoginInt = tk.IntVar()
+    autoPunchLoginInput = tk.Checkbutton(window,text = "自动打卡",variable = self.autoPunchLoginInt,onvalue = 1,offvalue = 0)
+    autoPunchLoginInput.pack()
+
     self.autoShutdownInt = tk.IntVar()
     autoShutdownInput = tk.Checkbutton(window,text = "完成时关机",variable = self.autoShutdownInt,onvalue = 1,offvalue = 0)
     autoShutdownInput.pack()
@@ -473,6 +477,20 @@ class PfCatcherForm:
           self.pfCatcher=PFPageCatcher(self.userNameInputStr.get(),self.userPwdInputStr.get())
           self.pfCatcher.login()
           self.isLogin=1
+
+          if self.autoPunchLoginInt.get()==1:
+            self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
+            self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
+            time.sleep(2)
+            self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
+            # self.pfCatcher.driver.find_element_by_xpath("//div[@class='tag-btn radius ' and text()='打卡']").click()
+            time.sleep(1)
+            self.pfCatcher.driver.find_element_by_xpath("//div[@class='dialog-footer']//div[@class='btn' and text()='发布']").click()            
+            time.sleep(3)       
+            self.pfCatcher.driver.refresh()
+            time.sleep(2)
+            #打卡之后弹窗不能关闭,要刷新     
+            
         
           html=self.pfCatcher.getHtml()
           lessonPage=self.pfCatcher.getPage(self.lessonUrlInputStr.get())      
