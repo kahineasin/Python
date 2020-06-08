@@ -92,6 +92,8 @@ class PfCatcherForm:
     #默认参数
     # defaultLessonUrl="https://perfect.zhixueyun.com/#/study/subject/detail/8247851a-a8a1-446a-988d-51697e32114b"
     defaultLessonUrl="https://perfect.zhixueyun.com/#/study/course/index"
+    defaultUserName="1712002"
+    # defaultUserName=""
 
 
     # 第1步，实例化object，建立窗口window
@@ -115,7 +117,7 @@ class PfCatcherForm:
     userNameLabel.pack()
     #userNameLabel.grid(row=0, column=0, padx=10, pady=10, ipadx=10, ipady=10)
 
-    self.userNameInputStr =StringVar(value="1712002")
+    self.userNameInputStr =StringVar(value=defaultUserName)
     userNameInput = tk.Entry(window, textvariable=self.userNameInputStr,show=None, font=('Arial', 14)) 
     userNameInput.pack()
 
@@ -152,6 +154,7 @@ class PfCatcherForm:
     learnedTimeInput.pack()
 
     self.startAfterLoginInt = tk.IntVar()
+    self.startAfterLoginInt.set(1)
     startAfterLoginInput = tk.Checkbutton(window,text = "登陆后自动开始",variable = self.startAfterLoginInt,onvalue = 1,offvalue = 0)
     startAfterLoginInput.pack()
 
@@ -439,7 +442,8 @@ class PfCatcherForm:
           if netErrorDom is not None:
             #self.pfCatcher.driver.refresh()
 
-            netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']/div[@class='slow-img']")
+            # netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']/div[@class='slow-img']")
+            netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
             # time.sleep(2)
             # netErrorEle.click()
 
