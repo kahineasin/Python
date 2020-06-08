@@ -441,20 +441,22 @@ class PfCatcherForm:
           netErrorDom=soup.find('div', text="网络不稳定，请刷新重试")
           if netErrorDom is not None:
             #self.pfCatcher.driver.refresh()
-
-            # netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']/div[@class='slow-img']")
-            netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
-            # time.sleep(2)
+            try:
+              netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
+              self.pfCatcher.driver.execute_script("arguments[0].click();", netErrorEle)
+            except BaseException as e:
+              print(e)
             # netErrorEle.click()
-
             # webdriver.ActionChains(self.pfCatcher.driver).move_to_element(netErrorEle ).click(netErrorEle ).perform()
-            self.pfCatcher.driver.execute_script("arguments[0].click();", netErrorEle)
             time.sleep(2)
             continue
           
           goawayDom=soup.find('p', text="亲爱的学员，目前学习正在计时中，请不要走开哦!")
           if goawayDom is not None:
-            self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']/div[@class='btn-ok']").click()
+            try:
+              self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']/div[@class='btn-ok']").click()
+            except BaseException as e:
+              print(e)
             time.sleep(2)
             continue
           
