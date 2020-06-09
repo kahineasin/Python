@@ -468,6 +468,12 @@ class PfCatcherForm:
             # time.sleep(2)
             continue
           
+          videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
+          if videoDom is None:
+            self.pfCatcher.driver.refresh()
+            time.sleep(5)
+            continue
+          
           time.sleep(20)
 
       self.curIdx+=1
