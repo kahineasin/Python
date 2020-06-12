@@ -476,7 +476,7 @@ class PfCatcherForm:
           goawayDom=soup.find('p', text="亲爱的学员，目前学习正在计时中，请不要走开哦!")
           if goawayDom is not None:
             try:
-              self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']//div[@class='btn-ok']").click()
+              self.pfCatcher.driver.find_element_by_xpath("//div[@class='alert-wrapper']//div[@class='btn-ok btn']").click()
             except BaseException as e:
               print(e)
             time.sleep(2)
