@@ -18,6 +18,10 @@ from threading import Thread
 from threading import Timer
 import os
 
+class PFDataHelper:  
+  @staticmethod
+  def DateFormat():
+    return '%Y-%m-%d'
 class PFPageCatcher:
     'Perfect爬虫类'
     def __init__(self, userName, pwd):
@@ -158,7 +162,7 @@ class PfCatcherForm:
     startAfterLoginInput = tk.Checkbutton(window,text = "登陆后自动开始",variable = self.startAfterLoginInt,onvalue = 1,offvalue = 0)
     startAfterLoginInput.pack()
 
-    self.autoPunchLoginInt = tk.IntVar()
+    self.autoPunchLoginInt = tk.IntVar(value=1)
     autoPunchLoginInput = tk.Checkbutton(window,text = "自动打卡",variable = self.autoPunchLoginInt,onvalue = 1,offvalue = 0)
     autoPunchLoginInput.pack()
 
@@ -178,6 +182,7 @@ class PfCatcherForm:
 
     self.isLogin=0
     self.pfCatcher=None
+    self.lastPushTime='' #上次打卡时间 
     # 第6步，主窗口循环显示
     # self.root=window
     # self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -418,7 +423,24 @@ class PfCatcherForm:
 
   # def scriptClick(self,ele,idx):
   #   self.pfCatcher.driver.execute_script("arguments[0].click();".format(str(idx)), ele)
+  def pushIn(self):#打卡
+    nowtime=datetime.datetime.now().strftime(PFDataHelper.DateFormat())
+    if self.autoPunchLoginInt.get()==1 and self.lastPushTime!=nowtime:
+      self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
+      self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
+      self.lastPushTime=nowtime
+      time.sleep(2)
+      self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
+      # self.pfCatcher.driver.find_element_by_xpath("//div[@class='tag-btn radius ' and text()='打卡']").click()
+      time.sleep(1)
+      self.pfCatcher.driver.find_element_by_xpath("//div[@class='dialog-footer']//div[@class='btn' and text()='发布']").click()            
+      time.sleep(3)       
+      self.pfCatcher.driver.refresh()
+      time.sleep(2)
+      #打卡之后弹窗不能关闭,要刷新     
   def playLesson(self,pfCatcher):  
+    self.pushIn()
+
     self.curIdx=0
     cnt=len(self.lessons)
 
@@ -490,18 +512,18 @@ class PfCatcherForm:
           self.pfCatcher.login()
           self.isLogin=1
 
-          if self.autoPunchLoginInt.get()==1:
-            self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
-            self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
-            time.sleep(2)
-            self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
-            # self.pfCatcher.driver.find_element_by_xpath("//div[@class='tag-btn radius ' and text()='打卡']").click()
-            time.sleep(1)
-            self.pfCatcher.driver.find_element_by_xpath("//div[@class='dialog-footer']//div[@class='btn' and text()='发布']").click()            
-            time.sleep(3)       
-            self.pfCatcher.driver.refresh()
-            time.sleep(2)
-            #打卡之后弹窗不能关闭,要刷新     
+          # if self.autoPunchLoginInt.get()==1:
+          #   self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
+          #   self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
+          #   time.sleep(2)
+          #   self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
+          #   # self.pfCatcher.driver.find_element_by_xpath("//div[@class='tag-btn radius ' and text()='打卡']").click()
+          #   time.sleep(1)
+          #   self.pfCatcher.driver.find_element_by_xpath("//div[@class='dialog-footer']//div[@class='btn' and text()='发布']").click()            
+          #   time.sleep(3)       
+          #   self.pfCatcher.driver.refresh()
+          #   time.sleep(2)
+          #   #打卡之后弹窗不能关闭,要刷新     
             
         
           html=self.pfCatcher.getHtml()
