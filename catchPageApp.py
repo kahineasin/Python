@@ -481,6 +481,15 @@ class PfCatcherForm:
               print(e)
             time.sleep(2)
             continue
+
+          openOtherDom=soup.find('div', text="您已打开新的课程详情页，点击按钮，可继续学习。")
+          if openOtherDom is not None:
+            try:
+              self.pfCatcher.driver.find_element_by_xpath("//div[@class='study-errors-page']//div[@class='btn']").click()
+            except BaseException as e:
+              print(e)
+            time.sleep(2)
+            continue
           
           replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
           if replayDom is not None and 'vjs-hidden' not in replayDom.get('class'):
