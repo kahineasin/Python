@@ -1,3 +1,7 @@
+[git]
+https://github.com/kahineasin/Python.git
+https://gitee.com/sellgirl/Python.git
+
 当前看到课程第7页
 
 改可选列表样式2:
