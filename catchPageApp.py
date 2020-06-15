@@ -423,11 +423,17 @@ class PfCatcherForm:
 
   # def scriptClick(self,ele,idx):
   #   self.pfCatcher.driver.execute_script("arguments[0].click();".format(str(idx)), ele)
+  def clickExceptOther(self,netErrorEle):
+      # netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
+      self.pfCatcher.driver.execute_script("arguments[0].click();", netErrorEle)
   def pushIn(self):#打卡
     nowtime=datetime.datetime.now().strftime(PFDataHelper.DateFormat())
     if self.autoPunchLoginInt.get()==1 and self.lastPushTime!=nowtime:
       self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
-      self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
+      # self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
+      #上句报错is not clickable at point (862, 18). Other element would receive the click: <div
+ #id="D66message-id" class="menu-item">...</div>
+      self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']"))
       self.lastPushTime=nowtime
       time.sleep(2)
       self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
