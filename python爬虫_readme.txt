@@ -1,6 +1,9 @@
 [git]
+git push --set-upstream https://github.com/kahineasin/Python.git master
+git push --set-upstream https://gitee.com/sellgirl/Python.git master
 https://github.com/kahineasin/Python.git
 https://gitee.com/sellgirl/Python.git
+
 
 当前看到课程第7页
 
