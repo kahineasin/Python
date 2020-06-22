@@ -507,14 +507,33 @@ class PfCatcherForm:
           
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
           if videoDom is None:
-            self.pfCatcher.driver.refresh()
-            time.sleep(5)
-            continue
+            if self.isLoginTimeout()==1:
+              self.pfCatcher.login()
+              self.playCurLesson(pfCatcher)
+              continue
+            else:                
+              self.pfCatcher.driver.refresh()
+              time.sleep(5)
+              continue
           
           time.sleep(20)
 
       self.curIdx+=1
-
+      
+  def isLoginTimeout(self):#是否登陆失效
+    soup=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml')
+    loginBtnDom=soup.find('button',attrs={'class': 'btn-login'})#重新播放按钮
+    if loginBtnDom is not None:
+      return 1
+    else:
+      return 0
+  # def checkLogin(self):#如果登陆失效的话重新登陆
+  #   soup=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml')
+  #   loginBtnDom=soup.find('button',attrs={'class': 'btn-login'})#重新播放按钮
+  #   if loginBtnDom is not None:
+  #     self.pfCatcher.login()
+  #     return 1
+  #   return 0
   def login(self):
       if tk.messagebox.askokcancel(title='Hi', message=self.userNameInputStr.get()):
         self.loginInput.config(state="disabled")
