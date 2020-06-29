@@ -19,6 +19,7 @@ from threading import Timer
 import os
 import pymssql #引入pymssql模块
 import uuid
+import configparser
 
 class PFDataHelper:  
   @staticmethod
@@ -95,11 +96,22 @@ class PFPageCatcher:
 
 class PfCatcherForm:
   def __init__(self):
+    config = configparser.ConfigParser()
+    conf_file = open("postAnswerPageApp_config.ini")
+    #config.readfp(conf_file)
+    config.read_file(conf_file)
+
     #默认参数
-    # defaultLessonUrl="https://perfect.zhixueyun.com/#/study/subject/detail/8247851a-a8a1-446a-988d-51697e32114b"
-    defaultLessonUrl="https://perfect.zhixueyun.com/#/study/course/index"
-    defaultUserName="1712002"
+    ## defaultLessonUrl="https://perfect.zhixueyun.com/#/study/subject/detail/8247851a-a8a1-446a-988d-51697e32114b"
+    # defaultLessonUrl="https://perfect.zhixueyun.com/#/study/course/index"
+    # defaultUserName="1712002"
+    # defaultUserPwd="123456a"
+    defaultLessonUrl=config.get("pageUrl","lessonUrl")
+    defaultUserName=config.get("userInfo","userName")
+    defaultUserPwd=config.get("userInfo","userPwd")
     # defaultUserName=""
+
+    conf_file.close()
 
 
     # 第1步，实例化object，建立窗口window
@@ -130,7 +142,7 @@ class PfCatcherForm:
     userPwdLabel = tk.Label(window, text='密码:', bg='green', font=('Arial', 12), width=30, height=1)
     userPwdLabel.pack()
 
-    self.userPwdInputStr =StringVar(value="123456a")
+    self.userPwdInputStr =StringVar(value=defaultUserPwd)
     userPwdInput = tk.Entry(window, textvariable=self.userPwdInputStr,show=None, font=('Arial', 14)) 
     userPwdInput.pack()
 
@@ -177,11 +189,11 @@ class PfCatcherForm:
 
     self.postAnswerInput=tk.Button(window, text='保存答案', bg='green', font=('Arial', 14), command=self.asyncPostAnswer )
     self.postAnswerInput.pack()
-    self.postAnswerInput.config(state="disabled")
+    # self.postAnswerInput.config(state="disabled")
 
     self.answerPagInput=tk.Button(window, text='开始回答问题', bg='green', font=('Arial', 14), command=self.asyncAnswerPage )
     self.answerPagInput.pack()
-    self.answerPagInput.config(state="disabled")
+    # self.answerPagInput.config(state="disabled")
 
     # self.playCurPageInput=tk.Button(window, text='播放当前列表页', bg='green', font=('Arial', 14), command=self.asyncPlayCurPage )
     # self.playCurPageInput.pack()
