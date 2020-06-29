@@ -56,9 +56,11 @@ class PFPageCatcher:
       input_password = driver.find_element_by_xpath("//input[@name='pword']")
       input_box0 = driver.find_element_by_xpath("//button[@class='btn-login']")
 
-      input_username.send_keys(u"1712002")
-      input_password.send_keys(u"123456a")
-      # # input_username.value="aaa"
+      # input_username.send_keys(u"1712002")
+      # input_password.send_keys(u"123456a")
+      # # # input_username.value="aaa"
+      input_username.send_keys(self._userName)
+      input_password.send_keys(self._pwd)
 
       input_box0.click()
 
