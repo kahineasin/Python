@@ -668,30 +668,41 @@ class PfCatcherForm:
     connect.close()
 
   def login(self):
-      if tk.messagebox.askokcancel(title='Hi', message=self.userNameInputStr.get()):
-        self.loginInput.config(state="disabled")
-        # self.playCurPageInput.config(state="disabled")
-        if self.isLogin==1:#如果是已登陆的状态,就播放当前打开的页面,而不是lessonUrlInputStr
-          self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
+    config = configparser.ConfigParser()
+    conf_file = open("postAnswerPageApp_config.ini")
+    config.read_file(conf_file)
+    conf_file.close()
+    config.set("userInfo","userName",self.userNameInputStr.get())
+    config.set("userInfo","userPwd",self.userPwdInputStr.get())
+    config.set("pageUrl","lessonUrl",self.lessonUrlInputStr.get())
+    file_write = open("postAnswerPageApp_config.ini","w")
+    config.write(file_write) 
+    file_write.close()
+
+    if tk.messagebox.askokcancel(title='Hi', message=self.userNameInputStr.get()):
+      self.loginInput.config(state="disabled")
+      # self.playCurPageInput.config(state="disabled")
+      if self.isLogin==1:#如果是已登陆的状态,就播放当前打开的页面,而不是lessonUrlInputStr
+        self.lessonUrlInputStr.set(self.pfCatcher.driver.current_url)
+        self.playCurPage()
+      else :
+        self.pfCatcher=PFPageCatcher(self.userNameInputStr.get(),self.userPwdInputStr.get())
+        self.pfCatcher.login()
+        self.isLogin=1
+
+        if self.startAfterLoginInt.get()==1:       
+          self.pfCatcher.getPage(self.lessonUrlInputStr.get())        
           self.playCurPage()
-        else :
-          self.pfCatcher=PFPageCatcher(self.userNameInputStr.get(),self.userPwdInputStr.get())
-          self.pfCatcher.login()
-          self.isLogin=1
+        else:
+          self.loginInput.config(state='normal',text='开始学习')
 
-          if self.startAfterLoginInt.get()==1:       
-            self.pfCatcher.getPage(self.lessonUrlInputStr.get())        
-            self.playCurPage()
-          else:
-            self.loginInput.config(state='normal',text='开始学习')
+        #题目答案页(抓题)
+        #self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/exam/exam/front/score-detail/f51c8545-b12a-4bcc-9032-7c1accfdb4d4') 
+        #答题页
+        self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/exam/exam/answer-paper/2a6d1120-9dd1-4a55-a056-2bd7df67f1ec') 
 
-          #题目答案页(抓题)
-          #self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/exam/exam/front/score-detail/f51c8545-b12a-4bcc-9032-7c1accfdb4d4') 
-          #答题页
-          self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/exam/exam/answer-paper/2a6d1120-9dd1-4a55-a056-2bd7df67f1ec') 
-
-          self.postAnswerInput.config(state='normal')          
-          self.answerPagInput.config(state="normal")
+        self.postAnswerInput.config(state='normal')          
+        self.answerPagInput.config(state="normal")
            
 
 
