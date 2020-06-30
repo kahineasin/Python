@@ -1,0 +1,35 @@
+/****** Script for SelectTopNRows command from SSMS  ******/
+SELECT TOP 1000 [AnswerId]
+      ,[QuestionId]
+      ,[Answer]
+      ,[CreatePerson]
+      ,[CreateDate]
+      ,[UpdatePerson]
+      ,[UpdateDate]
+      ,[DeleteFlag]
+      ,[ApproveState]
+      ,[ApprovePerson]
+      ,[ApproveDate]
+      ,[ApproveRemark]
+  FROM [SellGirl.Game].[dbo].[game_answer]
+  
+  select a.Answer,b.Question,b.IsRight from [SellGirl.Game].[dbo].[game_answer] a
+  full join [SellGirl.Game].[dbo].[game_question] b on b.QuestionId=a.QuestionId
+
+  
+    select a.Answer,b.Question,b.QuestionType,b.IsRight from [SellGirl.Game].[dbo].[game_answer] a
+  full join [SellGirl.Game].[dbo].[game_question] b on b.QuestionId=a.QuestionId
+  where b.Question like '%商城的优惠顾客是可以输入以下哪项信息进行登陆%'
+  
+  select * from [game_question] where QuestionType=2
+  
+  select * from [game_question] where QuestionType=3
+  select * from game_question where QuestionId='0D305349-42C5-4E4B-95E6-03BA9D88471C'
+  select * from game_answer where QuestionId='0D305349-42C5-4E4B-95E6-03BA9D88471C'
+  
+  --delete from game_question
+  --delete from [game_answer]
+  
+  --insert into game_question (QuestionId,Question,QuestionType)values('4b7dbc7f-5b34-4d82-b9d2-4544b46b95c9','某品牌，在前期线下推广时选择模特公司一位模特进行代言人宣传，结果业绩销量平平；在一次外交场合上，彭丽媛用了这款包包，结果品牌不仅曝光度提升了，销售业绩也全线飚红，这属于线下营销推广的什么渠道？（）',1)
+  
+  --alter table game_question alter column Question varchar(500) 

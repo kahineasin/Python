@@ -181,6 +181,10 @@ class PfCatcherForm:
     self.autoPunchLoginInt = tk.IntVar(value=1)
     autoPunchLoginInput = tk.Checkbutton(window,text = "自动打卡",variable = self.autoPunchLoginInt,onvalue = 1,offvalue = 0)
     autoPunchLoginInput.pack()
+    
+    self.autoPassLearnedInt = tk.IntVar(value=1)
+    autoPassLearnedInput = tk.Checkbutton(window,text = "自动跳过完成的课程",variable = self.autoPassLearnedInt,onvalue = 1,offvalue = 0)
+    autoPassLearnedInput.pack()
 
     self.autoShutdownInt = tk.IntVar()
     autoShutdownInput = tk.Checkbutton(window,text = "完成时关机",variable = self.autoShutdownInt,onvalue = 1,offvalue = 0)
@@ -407,7 +411,7 @@ class PfCatcherForm:
 
     while self.curIdx<cnt:
       lesson=self.lessons[self.curIdx]
-      if ('btn' not in lesson) or lesson['btn']!='重新学习':
+      if ('btn' not in lesson) or self.autoPassLearnedInt.get()==0 or lesson['btn']!='重新学习':
         self.playCurLesson(pfCatcher)
         time.sleep(10)#(900)
         finishCnt=0
