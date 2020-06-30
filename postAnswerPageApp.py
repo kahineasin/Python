@@ -145,7 +145,7 @@ class PfCatcherForm:
     userPwdLabel.pack()
 
     self.userPwdInputStr =StringVar(value=defaultUserPwd)
-    userPwdInput = tk.Entry(window, textvariable=self.userPwdInputStr,show=None, font=('Arial', 14)) 
+    userPwdInput = tk.Entry(window, textvariable=self.userPwdInputStr,show="*", font=('Arial', 14)) 
     userPwdInput.pack()
 
     lessonUrlLabel = tk.Label(window, text='课程地址:', bg='green', font=('Arial', 12), width=30, height=1)
