@@ -458,11 +458,14 @@ class PfCatcherForm:
           
           replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
           if replayDom is not None and 'vjs-hidden' not in replayDom.get('class'):
-            finishCnt=1
-
-            # self.pfCatcher.driver.find_element_by_xpath("//div[@class='videojs-referse-btn']").click()
-            # time.sleep(2)
-            continue
+            if self.autoPassLearnedInt.get()==1:
+              finishCnt=1
+              # self.pfCatcher.driver.find_element_by_xpath("//div[@class='videojs-referse-btn']").click()
+              # time.sleep(2)
+              continue
+            else:#当打开已学完的课程时,有可能进入这里
+              self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click()
+              continue
           
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
           if videoDom is None:
