@@ -20,6 +20,8 @@ import os
 import pymssql #引入pymssql模块
 import uuid
 import configparser
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.touch_actions import TouchActions
 
 class PFDataHelper:  
   @staticmethod
@@ -402,7 +404,27 @@ class PfCatcherForm:
       time.sleep(3)       
       self.pfCatcher.driver.refresh()
       time.sleep(2)
-      #打卡之后弹窗不能关闭,要刷新     
+      #打卡之后弹窗不能关闭,要刷新   
+  def clickReplayBtn(self):
+    tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']")
+    ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
+    Action = TouchActions(self.pfCatcher.driver)
+    Action.tap(tag_element)
+    Action.perform()
+    #self.clickExceptOther(tag_element)
+
+    # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click() #报错,被挡
+    # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
+    # self.pfCatcher.driver.execute_script("$('.videojs-referse-btn').click();")
+    # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']//span[@class='vjs-control-text']").click()  #报错,Other element would receive the click
+    # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']//span[@class='vjs-control-text']"))
+    # self.pfCatcher.driver.find_element_by_xpath("//video[@class='vjs-tech']").click() #报错,被挡
+    # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//video[@class='vjs-tech']"))  #点了还是没隐藏
+    # self.pfCatcher.driver.execute_script("arguments[1].click();", self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))  #Cannot read property 'click' of undefined    
+    # self.pfCatcher.driver.execute_script("arguments[0].click();", self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
+    # self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']").click()
+    # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']"))#点了还是没隐藏
+    time.sleep(5)
   def playLesson(self,pfCatcher):  
     self.pushIn()
 
@@ -414,6 +436,14 @@ class PfCatcherForm:
       if ('btn' not in lesson) or self.autoPassLearnedInt.get()==0 or lesson['btn']!='重新学习':
         self.playCurLesson(pfCatcher)
         time.sleep(10)#(900)
+
+        #如果不能自动播放,还是先检测后点一下播放吧  
+        soup=BeautifulSoup(pfCatcher.getHtml(), 'lxml')      
+        replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
+        if replayDom is not None and 'vjs-hidden' not in replayDom.get('class'):
+          # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
+          self.clickReplayBtn()
+
         finishCnt=0
         while finishCnt==0:
           learnedTime=datetime.datetime.now()-self.startTime
@@ -464,7 +494,10 @@ class PfCatcherForm:
               # time.sleep(2)
               continue
             else:#当打开已学完的课程时,有可能进入这里
-              self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click()
+              # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click()
+              # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
+              # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']//span[@class='vjs-control-text']").click()
+              self.clickReplayBtn()
               continue
           
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
