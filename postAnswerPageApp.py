@@ -408,10 +408,11 @@ class PfCatcherForm:
   def clickReplayBtn(self):
     tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']")
     ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
-    Action = TouchActions(self.pfCatcher.driver)
-    Action.tap(tag_element)
-    Action.perform()
-    #self.clickExceptOther(tag_element)
+    # Action = TouchActions(self.pfCatcher.driver)
+    # Action.tap(tag_element)
+    # Action.perform()
+    self.clickExceptOther(tag_element)
+    ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
 
     # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click() #报错,被挡
     # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
