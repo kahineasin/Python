@@ -201,6 +201,13 @@ class PfCatcherForm:
 
     self.answerPagInput=tk.Button(window, text='开始回答问题', bg='green', font=('Arial', 14), command=self.asyncAnswerPage )
     self.answerPagInput.pack()
+    
+    self.testReplayInput=tk.Button(window, text='测试重播', bg='blue', font=('Arial', 14), command=self.clickReplayBtn )
+    self.testReplayInput.pack()
+    
+    self.testPlayInput=tk.Button(window, text='测试播放', bg='blue', font=('Arial', 14), command=self.clickPlayBtn )
+    self.testPlayInput.pack()
+
     # self.answerPagInput.config(state="disabled")
 
     # self.playCurPageInput=tk.Button(window, text='播放当前列表页', bg='green', font=('Arial', 14), command=self.asyncPlayCurPage )
@@ -406,13 +413,16 @@ class PfCatcherForm:
       time.sleep(2)
       #打卡之后弹窗不能关闭,要刷新   
   def clickReplayBtn(self):
+    #实测试ok
     tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']")
-    ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
+    ActionChains(self.pfCatcher.driver).move_to_element(tag_element).click().perform() 
+
+    #ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
     # Action = TouchActions(self.pfCatcher.driver)
     # Action.tap(tag_element)
     # Action.perform()
-    self.clickExceptOther(tag_element)
-    ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
+    #self.clickExceptOther(tag_element)
+    #ActionChains(self.pfCatcher.driver).move_to_element(tag_element).perform()
 
     # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click() #报错,被挡
     # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
@@ -425,6 +435,14 @@ class PfCatcherForm:
     # self.pfCatcher.driver.execute_script("arguments[0].click();", self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
     # self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']").click()
     # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']"))#点了还是没隐藏
+    time.sleep(5)
+  def clickPlayBtn(self):
+    #实测试ok
+    tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='vjs-play-control vjs-control vjs-button vjs-paused' and @title='播放']")
+    tag_element.click()
+
+    #tag_element = self.pfCatcher.driver.find_element_by_xpath("//span[@class='vjs-control-text' and text()='播放']")
+    #ActionChains(self.pfCatcher.driver).move_to_element(tag_element).click().perform() 
     time.sleep(5)
   def playLesson(self,pfCatcher):  
     self.pushIn()
@@ -443,7 +461,7 @@ class PfCatcherForm:
         replayDom=soup.find('button',attrs={'class': 'videojs-referse-btn'})#重新播放按钮
         if replayDom is not None and 'vjs-hidden' not in replayDom.get('class'):
           # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
-          self.clickReplayBtn()
+          self.clickPlayBtn()
 
         finishCnt=0
         while finishCnt==0:
@@ -498,7 +516,7 @@ class PfCatcherForm:
               # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']").click()
               # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']"))
               # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']//span[@class='vjs-control-text']").click()
-              self.clickReplayBtn()
+              self.clickPlayBtn()
               continue
           
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
