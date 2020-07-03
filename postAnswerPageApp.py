@@ -32,13 +32,18 @@ class PFPageCatcher:
     def __init__(self, userName, pwd):
       self._userName = userName
       self._pwd = pwd
-    def login(self):        
+    def login(self,hideBrowser):        
       #https需要
       # profile=webdriver.FirefoxProfile()
       # profile.accept_untrusted_certs=True
       # profile=webdriver.ChromeProfile()#报错
       # self.driver = webdriver.Firefox(firefox_profile=profile)
-      self.driver = webdriver.Chrome()
+      if hideBrowser==1:        
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('--headless')
+        self.driver = webdriver.Chrome(chrome_options=chrome_options)
+      else:
+        self.driver = webdriver.Chrome()
       driver=self.driver
       driver.set_page_load_timeout(5000)
       #尝试登陆:https://www.cnblogs.com/andy9468/p/10901608.html
@@ -191,6 +196,10 @@ class PfCatcherForm:
     self.autoShutdownInt = tk.IntVar()
     autoShutdownInput = tk.Checkbutton(window,text = "完成时关机",variable = self.autoShutdownInt,onvalue = 1,offvalue = 0)
     autoShutdownInput.pack()
+    
+    self.hideBrowserInt = tk.IntVar()
+    hideBrowserInput = tk.Checkbutton(window,text = "隐藏浏览器",variable = self.hideBrowserInt,onvalue = 1,offvalue = 0)
+    hideBrowserInput.pack()
 
     self.loginInput=tk.Button(window, text='登陆', bg='green', font=('Arial', 14), command=self.asyncLogin )
     self.loginInput.pack()
@@ -522,7 +531,7 @@ class PfCatcherForm:
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
           if videoDom is None:
             if self.isLoginTimeout()==1:
-              self.pfCatcher.login()
+              self.pfCatcher.login(self.hideBrowserInt.get())
               self.playCurLesson(pfCatcher)
               continue
             else:                
@@ -748,7 +757,7 @@ class PfCatcherForm:
         self.playCurPage()
       else :
         self.pfCatcher=PFPageCatcher(self.userNameInputStr.get(),self.userPwdInputStr.get())
-        self.pfCatcher.login()
+        self.pfCatcher.login(self.hideBrowserInt.get())
         self.isLogin=1
 
         if self.startAfterLoginInt.get()==1:       
