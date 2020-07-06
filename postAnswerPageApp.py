@@ -477,9 +477,18 @@ class PfCatcherForm:
           learnedTime=datetime.datetime.now()-self.startTime
           self.learnedTimeInputStr.set('{0}分'.format(round(learnedTime.seconds/60,2)))
           soup=BeautifulSoup(pfCatcher.getHtml(), 'lxml')
-          finishDom=soup.find('div', text="您已完成该课程的学习")
 
+          finishDom=soup.find('div', text="您已完成该课程的学习")
           if finishDom is not None:
+            finishCnt=1
+            continue
+          
+          # H5课程
+          # h5Dom=soup.find('div',attrs={'class': 'item sub-text focus'}, text="H5")
+          # if h5Dom is not None:
+          #   finishCnt=1
+          #   continue
+          if len(soup.select('div.player-content div.h5-bg-img'))>0:
             finishCnt=1
             continue
           
