@@ -474,6 +474,7 @@ class PfCatcherForm:
 
         finishCnt=0
         while finishCnt==0:
+          self.pushIn()  #以防被某些课程卡住,在这里打卡比较保险
           learnedTime=datetime.datetime.now()-self.startTime
           self.learnedTimeInputStr.set('{0}分'.format(round(learnedTime.seconds/60,2)))
           soup=BeautifulSoup(pfCatcher.getHtml(), 'lxml')
