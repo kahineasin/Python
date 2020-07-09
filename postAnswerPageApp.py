@@ -118,6 +118,9 @@ class PfCatcherForm:
     defaultLessonUrl=config.get("pageUrl","lessonUrl")
     defaultUserName=config.get("userInfo","userName")
     defaultUserPwd=config.get("userInfo","userPwd")
+    defaultStartAfterLogin=config.get("userSetting","startAfterLogin")
+    defaultAutoPunchIn=config.get("userSetting","autoPunchIn")
+    defaultAutoPassLearned=config.get("userSetting","autoPassLearned")
     # defaultUserName=""
 
     conf_file.close()
@@ -181,15 +184,15 @@ class PfCatcherForm:
     learnedTimeInput.pack()
 
     self.startAfterLoginInt = tk.IntVar()
-    #self.startAfterLoginInt.set(1)
+    self.startAfterLoginInt.set(defaultStartAfterLogin)
     startAfterLoginInput = tk.Checkbutton(window,text = "登陆后自动开始",variable = self.startAfterLoginInt,onvalue = 1,offvalue = 0)
     startAfterLoginInput.pack()
 
-    self.autoPunchLoginInt = tk.IntVar(value=1)
+    self.autoPunchLoginInt = tk.IntVar(value=defaultAutoPunchIn)
     autoPunchLoginInput = tk.Checkbutton(window,text = "自动打卡",variable = self.autoPunchLoginInt,onvalue = 1,offvalue = 0)
     autoPunchLoginInput.pack()
     
-    self.autoPassLearnedInt = tk.IntVar(value=1)
+    self.autoPassLearnedInt = tk.IntVar(value=defaultAutoPassLearned)
     autoPassLearnedInput = tk.Checkbutton(window,text = "自动跳过完成的课程",variable = self.autoPassLearnedInt,onvalue = 1,offvalue = 0)
     autoPassLearnedInput.pack()
 
@@ -755,6 +758,9 @@ class PfCatcherForm:
     config.set("userInfo","userName",self.userNameInputStr.get())
     config.set("userInfo","userPwd",self.userPwdInputStr.get())
     config.set("pageUrl","lessonUrl",self.lessonUrlInputStr.get())
+    config.set("userSetting","startAfterLogin",str(self.startAfterLoginInt.get()))
+    config.set("userSetting","autoPunchIn",str(self.autoPunchLoginInt.get()))
+    config.set("userSetting","autoPassLearned",str(self.autoPassLearnedInt.get()))
     file_write = open("postAnswerPageApp_config.ini","w")
     config.write(file_write) 
     file_write.close()
