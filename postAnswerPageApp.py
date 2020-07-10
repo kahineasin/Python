@@ -29,25 +29,50 @@ class PFDataHelper:
     return '%Y-%m-%d'
   @staticmethod
   def DomClick(driver,tag_element):
+    ee=None
+    #tag_element=driver.find_element_by_xpath(tag_element_xpath)
     try:
       tag_element.click()
     except BaseException as e:
-      print('DomClick() Error e: ')
-      print(e)
+      ee=e
       try:
         ActionChains(driver).move_to_element(tag_element).click().perform() 
       except BaseException as e1:
-        print('DomClick() Error e1: ')
-        print(e1)
+        ee=e1
         try:
           driver.execute_script("arguments[0].click();", tag_element)
         except BaseException as e2:
-          print('DomClick() Error e2: ')
-          print(e2)
-          return False
-    print('DomClick() Success: ')
-    print(tag_element)
-    return True
+          ee=e2
+    if ee==None:
+      print('DomClick() Success: ')    
+      print(tag_element.tag_name)
+      return True
+    else:
+      print('DomClick() Error e: ')
+      print(e)
+  @staticmethod
+  def DomClickXPath(driver,tag_element_xpath):
+    ee=None
+    tag_element=driver.find_element_by_xpath(tag_element_xpath)
+    try:
+      tag_element.click()
+    except BaseException as e:
+      ee=e
+      try:
+        ActionChains(driver).move_to_element(tag_element).click().perform() 
+      except BaseException as e1:
+        ee=e1
+        try:
+          driver.execute_script("arguments[0].click();", tag_element)
+        except BaseException as e2:
+          ee=e2
+    if ee==None:
+      print('DomClick() Success: ')    
+      print(tag_element_xpath)
+      return True
+    else:
+      print('DomClick() Error e: ')
+      print(e)
 class PFPageCatcher:
     'Perfect爬虫类'
     def __init__(self, userName, pwd):
@@ -469,8 +494,9 @@ class PfCatcherForm:
     # self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']").click()
     # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//span[text()='重新学习']"))#点了还是没隐藏
     time.sleep(5)
-  def clickPlayBtn(self):
-    PFDataHelper.DomClick(self.pfCatcher.driver,self.pfCatcher.driver.find_element_by_xpath("//button[@class='vjs-play-control vjs-control vjs-button vjs-paused' and @title='播放']"))
+  def clickPlayBtn(self):    
+    # PFDataHelper.DomClick(self.pfCatcher.driver,self.pfCatcher.driver.find_element_by_xpath("//button[@class='vjs-play-control vjs-control vjs-button vjs-paused' and @title='播放']"))    
+    PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//button[@class='vjs-play-control vjs-control vjs-button vjs-paused' and @title='播放']")
     # try:
     #   #实测试ok
     #   tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='vjs-play-control vjs-control vjs-button vjs-paused' and @title='播放']")
