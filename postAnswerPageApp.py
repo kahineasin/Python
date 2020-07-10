@@ -52,27 +52,27 @@ class PFDataHelper:
       print(e)
   @staticmethod
   def DomClickXPath(driver,tag_element_xpath):
-    ee=None
+    ee=[]
     tag_element=driver.find_element_by_xpath(tag_element_xpath)
     try:
       tag_element.click()
     except BaseException as e:
-      ee=e
+      ee+=[e]
       try:
         ActionChains(driver).move_to_element(tag_element).click().perform() 
       except BaseException as e1:
-        ee=e1
+        ee+=[e1]
         try:
           driver.execute_script("arguments[0].click();", tag_element)
         except BaseException as e2:
-          ee=e2
-    if ee==None:
-      print('DomClick() Success: ')    
+          ee+=[e2]
+    if len(ee)<3:
+      print('DomClick() Success: '+str(len(ee)))    
       print(tag_element_xpath)
       return True
     else:
       print('DomClick() Error e: ')
-      print(e)
+      print(ee)
 class PFPageCatcher:
     'Perfect爬虫类'
     def __init__(self, userName, pwd):
@@ -124,7 +124,7 @@ class PFPageCatcher:
       return self.driver.page_source
     def getPage(self,url):
       self.driver.get(url)
-      time.sleep(5)
+      time.sleep(8)  #5时有报错
       return self.driver.page_source
     # def getLesson(self):
     #   driver=self.driver
