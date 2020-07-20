@@ -22,57 +22,58 @@ import uuid
 import configparser
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.touch_actions import TouchActions
+from Perfect import PFDataHelper 
 
-class PFDataHelper:  
-  @staticmethod
-  def DateFormat():
-    return '%Y-%m-%d'
-  @staticmethod
-  def DomClick(driver,tag_element):
-    ee=None
-    #tag_element=driver.find_element_by_xpath(tag_element_xpath)
-    try:
-      tag_element.click()
-    except BaseException as e:
-      ee=e
-      try:
-        ActionChains(driver).move_to_element(tag_element).click().perform() 
-      except BaseException as e1:
-        ee=e1
-        try:
-          driver.execute_script("arguments[0].click();", tag_element)
-        except BaseException as e2:
-          ee=e2
-    if ee==None:
-      print('DomClick() Success: ')    
-      print(tag_element.tag_name)
-      return True
-    else:
-      print('DomClick() Error e: ')
-      print(e)
-  @staticmethod
-  def DomClickXPath(driver,tag_element_xpath):
-    ee=[]
-    tag_element=driver.find_element_by_xpath(tag_element_xpath)
-    try:
-      tag_element.click()
-    except BaseException as e:
-      ee+=[e]
-      try:
-        ActionChains(driver).move_to_element(tag_element).click().perform() 
-      except BaseException as e1:
-        ee+=[e1]
-        try:
-          driver.execute_script("arguments[0].click();", tag_element)
-        except BaseException as e2:
-          ee+=[e2]
-    if len(ee)<3:
-      print('DomClick() Success: '+str(len(ee)))    
-      print(tag_element_xpath)
-      return True
-    else:
-      print('DomClick() Error e: ')
-      print(ee)
+# class PFDataHelper:  
+#   @staticmethod
+#   def DateFormat():
+#     return '%Y-%m-%d'
+#   @staticmethod
+#   def DomClick(driver,tag_element):
+#     ee=None
+#     #tag_element=driver.find_element_by_xpath(tag_element_xpath)
+#     try:
+#       tag_element.click()
+#     except BaseException as e:
+#       ee=e
+#       try:
+#         ActionChains(driver).move_to_element(tag_element).click().perform() 
+#       except BaseException as e1:
+#         ee=e1
+#         try:
+#           driver.execute_script("arguments[0].click();", tag_element)
+#         except BaseException as e2:
+#           ee=e2
+#     if ee==None:
+#       print('DomClick() Success: ')    
+#       print(tag_element.tag_name)
+#       return True
+#     else:
+#       print('DomClick() Error e: ')
+#       print(e)
+#   @staticmethod
+#   def DomClickXPath(driver,tag_element_xpath):
+#     ee=[]
+#     tag_element=driver.find_element_by_xpath(tag_element_xpath)
+#     try:
+#       tag_element.click()
+#     except BaseException as e:
+#       ee+=[e]
+#       try:
+#         ActionChains(driver).move_to_element(tag_element).click().perform() 
+#       except BaseException as e1:
+#         ee+=[e1]
+#         try:
+#           driver.execute_script("arguments[0].click();", tag_element)
+#         except BaseException as e2:
+#           ee+=[e2]
+#     if len(ee)<3:
+#       print('DomClick() Success: '+str(len(ee)))    
+#       print(tag_element_xpath)
+#       return True
+#     else:
+#       print('DomClick() Error e: ')
+#       print(ee)
 class PFPageCatcher:
     'Perfect爬虫类'
     def __init__(self, userName, pwd):
@@ -168,6 +169,7 @@ class PfCatcherForm:
     defaultAutoPunchIn=config.get("userSetting","autoPunchIn")
     defaultAutoPassLearned=config.get("userSetting","autoPassLearned")
     # defaultUserName=""
+    self.currentFullChromeVersion=config.get("sysInfo","currentFullChromeVersion")
 
     conf_file.close()
 
@@ -806,7 +808,9 @@ class PfCatcherForm:
     cursor.close()   
     connect.close()
 
-  def login(self):
+  def login(self):    
+    newFullChromeVersion=PFDataHelper.DownloadDriverForChrome(self.currentFullChromeVersion)
+
     config = configparser.ConfigParser()
     conf_file = open("postAnswerPageApp_config.ini")
     config.read_file(conf_file)
@@ -817,6 +821,12 @@ class PfCatcherForm:
     config.set("userSetting","startAfterLogin",str(self.startAfterLoginInt.get()))
     config.set("userSetting","autoPunchIn",str(self.autoPunchLoginInt.get()))
     config.set("userSetting","autoPassLearned",str(self.autoPassLearnedInt.get()))
+
+    if newFullChromeVersion!=self.currentFullChromeVersion:
+      print('chrome version from '+self.currentFullChromeVersion+' to '+newFullChromeVersion)
+      config.set("sysInfo","currentFullChromeVersion",newFullChromeVersion)
+      self.currentFullChromeVersion=newFullChromeVersion
+
     file_write = open("postAnswerPageApp_config.ini","w")
     config.write(file_write) 
     file_write.close()
