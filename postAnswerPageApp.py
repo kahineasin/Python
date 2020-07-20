@@ -459,7 +459,11 @@ class PfCatcherForm:
       # self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
       #上句报错is not clickable at point (862, 18). Other element would receive the click: <div
  #id="D66message-id" class="menu-item">...</div>
-      self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']"))
+
+      # self.clickExceptOther(self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']"))
+      #PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//div[@class='publish-btn btn']")
+      PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//div[contains(@class,'publish-btn')]")
+      
       self.lastPushTime=nowtime
       time.sleep(2)
       self.pfCatcher.driver.find_element_by_xpath("//div[@class='form relative pulish-content-page']//input[@name='title']").send_keys(u"打卡")
