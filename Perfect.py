@@ -91,7 +91,7 @@ class PFDataHelper:
         raise OSError('Occurred an exception while extracting zip file. ')
     zf.close()
   @staticmethod
-  def DownloadDriverForChrome(currentFullChromeVersion):    
+  def DownloadDriverForChrome(currentFullChromeVersion,currentFullChromeDriverVersion):    
     DriverVersions = {
         '73':'2.46',
         '72':'2.46',
@@ -150,13 +150,17 @@ class PFDataHelper:
         print(e1)
 
     if FullChromeVersion==currentFullChromeVersion:
-      return currentFullChromeVersion
+      return [currentFullChromeVersion,currentFullChromeDriverVersion]
+
+    newFullChromeDriverVersion=''
+
     ChromeVersion = int(FullChromeVersion.split('.')[0])
     print('Chrome version: '+FullChromeVersion)
     if ChromeVersion <= 73:
         if not str(ChromeVersion) in DriverVersions:
             raise KeyError('There isn\'t a chromedriver that supports your Chrome version. ')
         try:
+            newFullChromeDriverVersion=DriverVersions[str(ChromeVersion)]
             urllib.request.urlretrieve('https://npm.taobao.org/mirrors/chromedriver/'+DriverVersions[str(ChromeVersion)]+'/chromedriver_win32.zip','chromedriver_win32.zip')
         except:
             print('Can\'t connect to the server! ')
@@ -181,6 +185,7 @@ class PFDataHelper:
             if not str(ChromeVersion) in AvailableVersions:
                 raise KeyError('There isn\'t has a chromedriver that supports your Chrome version. ')
             try:
+                newFullChromeDriverVersion=AvailableVersions[str(ChromeVersion)]
                 print('Downloading... \nURL:https://npm.taobao.org/mirrors/chromedriver/'+AvailableVersions[str(ChromeVersion)]+'/chromedriver_win32.zip')
                 urllib.request.urlretrieve('https://npm.taobao.org/mirrors/chromedriver/'+AvailableVersions[str(ChromeVersion)]+'/chromedriver_win32.zip','chromedriver_win32.zip')
             except:
@@ -189,5 +194,5 @@ class PFDataHelper:
                 print('Extracting file... ')
                 PFDataHelper.unzip_single('chromedriver_win32.zip','')
                 print('Download successfully. ')
-    return FullChromeVersion
+    return [FullChromeVersion,newFullChromeDriverVersion]
 

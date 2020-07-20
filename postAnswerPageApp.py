@@ -170,6 +170,7 @@ class PfCatcherForm:
     defaultAutoPassLearned=config.get("userSetting","autoPassLearned")
     # defaultUserName=""
     self.currentFullChromeVersion=config.get("sysInfo","currentFullChromeVersion")
+    self.currentFullChromeDriverVersion=config.get("sysInfo","currentFullChromeDriverVersion")
 
     conf_file.close()
 
@@ -280,6 +281,9 @@ class PfCatcherForm:
     self.isLogin=0
     self.pfCatcher=None
     self.lastPushTime='' #上次打卡时间 
+
+    self.currentLessonPageHandler=''
+    self.currentVideoPageHandler=''
     # 第6步，主窗口循环显示
     # self.root=window
     # self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -411,6 +415,7 @@ class PfCatcherForm:
       self.lessonUrlType=2  #https://perfect.zhixueyun.com/#/study/course/index      
       self.curLessonPage=int(BeautifulSoup(self.pfCatcher.getHtml(), 'lxml').select('.pagination .active')[0].get_text())  #这种类型是分页的
 
+    self.currentLessonPageHandler=self.pfCatcher.driver.current_window_handle
         
     if self.lessonUrlType==1:
       self.doPlayCurPage()    
@@ -447,9 +452,27 @@ class PfCatcherForm:
       pfCatcher.getPage("https://perfect.zhixueyun.com/#/study/course/detail/10&{0}/6/1".format(lesson['attachmentId']))
     else:
       self.processInputStr.set('{0}/{1} 第{2}页'.format(self.curIdx,self.lessonCnt,self.curLessonPage))
-      # pfCatcher.getPage("https://perfect.zhixueyun.com/{0}".format(lesson['url'])) 
-      pfCatcher.getPage("https://perfect.zhixueyun.com/{0}/6/1".format(lesson['url']))#后面没有6/1时不能播放,试试加上(似乎有了6/1就能自动播放)--benjamin20200528
+      ## pfCatcher.getPage("https://perfect.zhixueyun.com/{0}".format(lesson['url'])) 
+      #pfCatcher.getPage("https://perfect.zhixueyun.com/{0}/6/1".format(lesson['url']))#后面没有6/1时不能播放,试试加上(似乎有了6/1就能自动播放)--benjamin20200528
+      # 上面那样,在网页改版之后,直接改变url的话,课程会一直报错"打开了其它课程"以致不能切换
 
+      # handles = self.pfCatcher.driver.window_handles
+      # if len(handles)>1:
+      if self.currentVideoPageHandler!='' and self.currentVideoPageHandler==self.pfCatcher.driver.current_window_handle :
+        # self.pfCatcher.driver.switch_to.window(handles[1])
+        self.pfCatcher.driver.switch_to.window(self.currentVideoPageHandler)
+        self.pfCatcher.driver.close()
+        self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
+
+      if self.currentLessonPageHandler!=self.pfCatcher.driver.current_window_handle:
+        self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
+
+      PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//li[@class='list-item']//a[@href='{0}']".format(lesson['url']))
+      
+      handles = self.pfCatcher.driver.window_handles
+      if len(handles)>1:
+        self.currentVideoPageHandler=handles[len(handles)-1]
+        self.pfCatcher.driver.switch_to.window(self.currentVideoPageHandler)
 
   def clickExceptOther(self,netErrorEle):
       # netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
@@ -809,7 +832,9 @@ class PfCatcherForm:
     connect.close()
 
   def login(self):    
-    newFullChromeVersion=PFDataHelper.DownloadDriverForChrome(self.currentFullChromeVersion)
+    newFullChromeVersionArr=PFDataHelper.DownloadDriverForChrome(self.currentFullChromeVersion,self.currentFullChromeDriverVersion)
+    newFullChromeVersion=newFullChromeVersionArr[0]
+    newFullChromeDriverVersion=newFullChromeVersionArr[1]
 
     config = configparser.ConfigParser()
     conf_file = open("postAnswerPageApp_config.ini")
@@ -825,6 +850,7 @@ class PfCatcherForm:
     if newFullChromeVersion!=self.currentFullChromeVersion:
       print('chrome version from '+self.currentFullChromeVersion+' to '+newFullChromeVersion)
       config.set("sysInfo","currentFullChromeVersion",newFullChromeVersion)
+      config.set("sysInfo","currentFullChromeDriverVersion",newFullChromeDriverVersion)
       self.currentFullChromeVersion=newFullChromeVersion
 
     file_write = open("postAnswerPageApp_config.ini","w")
