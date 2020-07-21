@@ -87,7 +87,8 @@ class PFPageCatcher:
       # self.driver = webdriver.Firefox(firefox_profile=profile)
       if hideBrowser==1:        
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--headless')        
+        chrome_options.add_argument('--disable-gpu')
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
       else:
         self.driver = webdriver.Chrome()
@@ -887,7 +888,8 @@ class PfCatcherForm:
         self.isLogin=1
 
         if self.startAfterLoginInt.get()==1:       
-          self.pfCatcher.getPage(self.lessonUrlInputStr.get())        
+          self.pfCatcher.getPage(self.lessonUrlInputStr.get())   #如果隐藏了浏览器,这个页面总是加载不出来视频列表--benjamin todo
+          # time.sleep(8)     
           self.playCurPage()
         else:
           self.loginInput.config(state='normal',text='开始学习')
