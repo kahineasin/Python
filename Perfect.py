@@ -74,12 +74,14 @@ class PFDataHelper:
         except BaseException as e2:
           ee+=[e2]
     if len(ee)<3:
-      print('DomClick() Success: '+str(len(ee)))    
+      print('\r\n\r\nDomClick() Success:{0}\r\n\r\n '.format(str(len(ee))))    
       print(tag_element_xpath)
       return True
     else:
+      print('\r\n\r\n')
       print('DomClick() Error e: ')
       print(ee)      
+      print('\r\n\r\n')
   @staticmethod
   def unzip_single(src_file, dest_dir, password=None):
     if password:

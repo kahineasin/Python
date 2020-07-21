@@ -480,7 +480,14 @@ class PfCatcherForm:
   def pushIn(self):#打卡
     nowtime=datetime.datetime.now().strftime(PFDataHelper.DateFormat())
     if self.autoPunchLoginInt.get()==1 and self.lastPushTime!=nowtime:
-      self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
+      #不要在当前window打开
+      # self.pfCatcher.getPage('https://perfect.zhixueyun.com/#/ask/index') 
+
+      js='window.open("https://perfect.zhixueyun.com/#/ask/index");'
+      self.pfCatcher.driver.execute_script(js)
+      handles = (self.pfCatcher.driver.window_handles)
+      self.pfCatcher.driver.switch_to_window(handles[len(handles)-1])
+
       # self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
       #上句报错is not clickable at point (862, 18). Other element would receive the click: <div
  #id="D66message-id" class="menu-item">...</div>
@@ -496,9 +503,11 @@ class PfCatcherForm:
       time.sleep(1)
       self.pfCatcher.driver.find_element_by_xpath("//div[@class='dialog-footer']//div[@class='btn' and text()='发布']").click()            
       time.sleep(3)       
-      self.pfCatcher.driver.refresh()
-      time.sleep(2)
+      # self.pfCatcher.driver.refresh()
+      # time.sleep(2)
       #打卡之后弹窗不能关闭,要刷新   
+      self.pfCatcher.driver.close()
+      self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
   def clickReplayBtn(self):
     #实测试ok
     tag_element = self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']")
@@ -558,7 +567,7 @@ class PfCatcherForm:
 
         finishCnt=0
         while finishCnt==0:
-          self.pushIn()  #以防被某些课程卡住,在这里打卡比较保险
+          #self.pushIn()  #以防被某些课程卡住,在这里打卡比较保险
           learnedTime=datetime.datetime.now()-self.startTime
           self.learnedTimeInputStr.set('{0}分'.format(round(learnedTime.seconds/60,2)))
           soup=BeautifulSoup(pfCatcher.getHtml(), 'lxml')
@@ -636,6 +645,15 @@ class PfCatcherForm:
           time.sleep(20)
 
       self.curIdx+=1
+    
+    if self.currentVideoPageHandler!='' and self.currentVideoPageHandler==self.pfCatcher.driver.current_window_handle :
+      # self.pfCatcher.driver.switch_to.window(handles[1])
+      self.pfCatcher.driver.switch_to.window(self.currentVideoPageHandler)
+      self.pfCatcher.driver.close()
+      self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
+
+    if self.currentLessonPageHandler!=self.pfCatcher.driver.current_window_handle:
+      self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
       
   def isLoginTimeout(self):#是否登陆失效
     soup=BeautifulSoup(self.pfCatcher.getHtml(), 'lxml')
