@@ -87,7 +87,8 @@ class PFPageCatcher:
       # self.driver = webdriver.Firefox(firefox_profile=profile)
       if hideBrowser==1:        
         chrome_options = webdriver.ChromeOptions()
-        chrome_options.add_argument('--headless')        
+        chrome_options.add_argument('headless')       
+        # chrome_options.add_argument('--headless')        
         #chrome_options.add_argument('--disable-gpu')
         self.driver = webdriver.Chrome(chrome_options=chrome_options)
       else:
@@ -264,10 +265,10 @@ class PfCatcherForm:
     self.answerPagInput=tk.Button(window, text='开始回答问题', bg='green', font=('Arial', 14), command=self.asyncAnswerPage )
     self.answerPagInput.pack()
     
-    self.testReplayInput=tk.Button(window, text='测试重播', bg='blue', font=('Arial', 14), command=self.clickReplayBtn )
-    self.testReplayInput.pack()
+    # self.testReplayInput=tk.Button(window, text='测试重播', bg='blue', font=('Arial', 14), command=self.clickReplayBtn )
+    # self.testReplayInput.pack()
     
-    self.testPlayInput=tk.Button(window, text='测试播放', bg='blue', font=('Arial', 14), command=self.clickPlayBtn )
+    self.testPlayInput=tk.Button(window, text='测试播放', bg='blue', font=('Arial', 14), command=self.testClickPlayBtn )
     self.testPlayInput.pack()
 
     # self.answerPagInput.config(state="disabled")
@@ -488,6 +489,7 @@ class PfCatcherForm:
       self.pfCatcher.driver.execute_script(js)
       handles = (self.pfCatcher.driver.window_handles)
       self.pfCatcher.driver.switch_to_window(handles[len(handles)-1])
+      time.sleep(5)
 
       # self.pfCatcher.driver.find_element_by_xpath("//div[@class='publish-btn']").click()
       #上句报错is not clickable at point (862, 18). Other element would receive the click: <div
@@ -547,6 +549,8 @@ class PfCatcherForm:
     #   except BaseException as e1:
     #     time.sleep(1)
     time.sleep(5)
+  def testClickPlayBtn(self):
+    PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//button[@class='vjs-big-play-button']")  
   def playLesson(self,pfCatcher):  
     self.pushIn()
 
@@ -631,6 +635,10 @@ class PfCatcherForm:
               # self.pfCatcher.driver.find_element_by_xpath("//button[@class='videojs-referse-btn']//span[@class='vjs-control-text']").click()
               self.clickPlayBtn()
               continue
+
+          playDom=soup.find('button',attrs={'class': 'vjs-big-play-button'})#重新播放按钮
+          if playDom is not None and 'vjs-hidden' not in playDom.get('class'):
+            PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//button[@class='vjs-big-play-button']")           
           
           videoDom=soup.find('video',attrs={'class': 'vjs-tech'}) #如果没有找到这个元素，认为页面加载失败(（)可能是网络原因)
           if videoDom is None:
@@ -889,7 +897,7 @@ class PfCatcherForm:
 
         if self.startAfterLoginInt.get()==1:       
           self.pfCatcher.getPage(self.lessonUrlInputStr.get())   #如果隐藏了浏览器,这个页面总是加载不出来视频列表--benjamin todo
-          # time.sleep(8)     
+          time.sleep(10)     
           self.playCurPage()
         else:
           self.loginInput.config(state='normal',text='开始学习')
