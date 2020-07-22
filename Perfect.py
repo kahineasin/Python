@@ -141,6 +141,10 @@ class PFDataHelper:
         '30':'2.8',
         '29':'2.7'
     }
+    #这里可以配置精确的版本对应: chrome版本->driver版本  --benjamin
+    accurateChromeToDriverVersionDict={
+      '84.0.4147.89':'84.0.4147.30'
+    }
 
     FullChromeVersion=''
     try:
@@ -158,6 +162,7 @@ class PFDataHelper:
 
     ChromeVersion = int(FullChromeVersion.split('.')[0])
     print('Chrome version: '+FullChromeVersion)
+
     if ChromeVersion <= 73:
         if not str(ChromeVersion) in DriverVersions:
             raise KeyError('There isn\'t a chromedriver that supports your Chrome version. ')
@@ -182,6 +187,20 @@ class PFDataHelper:
             for i in re.findall('<a href="/mirrors/chromedriver/(.*?)</a>',urlRead):
                 if i[0] in 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM' or 'RELEASE' in i or int(i.split('.')[0]) <= 72:
                     continue
+                  
+                if FullChromeVersion in accurateChromeToDriverVersionDict and i.split('/">')[0]==accurateChromeToDriverVersionDict[FullChromeVersion]:
+                  try:
+                      newFullChromeDriverVersion=accurateChromeToDriverVersionDict[FullChromeVersion]
+                      print('Downloading... \nURL:https://npm.taobao.org/mirrors/chromedriver/'+newFullChromeDriverVersion+'/chromedriver_win32.zip')
+                      urllib.request.urlretrieve('https://npm.taobao.org/mirrors/chromedriver/'+newFullChromeDriverVersion+'/chromedriver_win32.zip','chromedriver_win32.zip')
+                  except:
+                      print('Download failed. ')
+                  else:
+                      print('Extracting file... ')
+                      PFDataHelper.unzip_single('chromedriver_win32.zip','')
+                      print('Download successfully. ')
+                  return [FullChromeVersion,newFullChromeDriverVersion]
+
                 if not i.split('.')[0] in AvailableVersions:
                     AvailableVersions[i.split('.')[0]] = i.split('/">')[0]
             if not str(ChromeVersion) in AvailableVersions:
