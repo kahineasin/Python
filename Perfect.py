@@ -82,6 +82,7 @@ class PFDataHelper:
       print('DomClick() Error e: ')
       print(ee)      
       print('\r\n\r\n')
+      return False
   @staticmethod
   def unzip_single(src_file, dest_dir, password=None):
     if password:

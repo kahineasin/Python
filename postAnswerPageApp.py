@@ -448,6 +448,7 @@ class PfCatcherForm:
   def playCurLesson(self,pfCatcher):  
     # learnedTime=datetime.datetime.now()-self.startTime
     lesson=self.lessons[self.curIdx]
+    success=True
     # self.learnedTimeInputStr.set('{0}分'.format(round(learnedTime.seconds/60,2)))
     if self.lessonUrlType==1:
       self.processInputStr.set('{0}/{1}'.format(self.curIdx,self.lessonCnt))
@@ -469,12 +470,13 @@ class PfCatcherForm:
       if self.currentLessonPageHandler!=self.pfCatcher.driver.current_window_handle:
         self.pfCatcher.driver.switch_to.window(self.currentLessonPageHandler)
 
-      PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//li[@class='list-item']//a[@href='{0}']".format(lesson['url']))
+      success=PFDataHelper.DomClickXPath(self.pfCatcher.driver,"//li[@class='list-item']//a[@href='{0}']".format(lesson['url']))
       
       handles = self.pfCatcher.driver.window_handles
       if len(handles)>1:
         self.currentVideoPageHandler=handles[len(handles)-1]
         self.pfCatcher.driver.switch_to.window(self.currentVideoPageHandler)
+    return success
 
   def clickExceptOther(self,netErrorEle):
       # netErrorEle=self.pfCatcher.driver.find_element_by_xpath("//div[@class='vjs-netslow']//div[@class='slow-img']")
@@ -560,7 +562,8 @@ class PfCatcherForm:
     while self.curIdx<cnt:
       lesson=self.lessons[self.curIdx]
       if ('btn' not in lesson) or self.autoPassLearnedInt.get()==0 or lesson['btn']!='重新学习':
-        self.playCurLesson(pfCatcher)
+        if self.playCurLesson(pfCatcher)==False:
+          continue
         time.sleep(10)#(900)
 
         #如果不能自动播放,还是先检测后点一下播放吧  
