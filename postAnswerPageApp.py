@@ -98,11 +98,13 @@ class PFPageCatcher:
       #尝试登陆:https://www.cnblogs.com/andy9468/p/10901608.html
       loginUrl="https://zxy9.zhixueyun.com/oauth/#login/cmVzcG9uc2VfdHlwZT10b2tlbiZjbGllbnRfaWQ9OTk5JnJlZGlyZWN0X3VyaT1odHRwcyUzQSUyRiUyRnBlcmZlY3QuemhpeHVleXVuLmNvbSZzdGF0ZT0lMkZob21lJmxhbmc9Y24mY2FuY2VsUmVtZW1iZXJTdGF0ZT0w"
       #loginUrl="http://192.168.0.26:28102/User/Login?ReturnUrl=%2f"
-      driver.get(loginUrl)
+
+      # driver.get(loginUrl)
+      PFDataHelper.GetPage(driver,loginUrl,lambda a: a.find('button',attrs={'class': 'btn-login'}))
 
       print('打开了页面')
 
-      time.sleep(5) #driver.get之后要等待页面加载完(有的情况下get会自动等待加载完)--benjamin
+      #time.sleep(5) #driver.get之后要等待页面加载完(有的情况下get会自动等待加载完)--benjamin
   #     # 点击账号和密码登录
       #input_username = driver.find_element_by_xpath("//input[@name='userid']")
       # input_password = driver.find_element_by_xpath("//input[@name='password']")

@@ -83,6 +83,28 @@ class PFDataHelper:
       print(ee)      
       print('\r\n\r\n')
       return False
+  # @staticmethod
+  # def GetPage(driver,url):
+  #   add=lambda x, y: x+y
+  #   print(add(1,2))
+
+  @staticmethod
+  def GetPage(driver,url,findAction):
+    driver.get(url)	          	
+    soup=BeautifulSoup(driver.page_source, 'lxml')
+    # dom=soup.find('p', text="亲爱的学员，目前学习正在计时中，请不要走开哦!")   
+    dom=findAction(soup)      
+    nowtime=datetime.datetime.now()
+    # isTimeout=False
+    while dom is None or len(dom)<1:
+      time.sleep(1)
+      soup = BeautifulSoup(driver.page_source, 'lxml')
+      dom=findAction(soup)   
+      if (datetime.datetime.now()-nowtime).seconds>20:#20秒打不开就超时
+        # isTimeout=True
+        return False
+    return True
+
   @staticmethod
   def unzip_single(src_file, dest_dir, password=None):
     if password:
