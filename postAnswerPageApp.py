@@ -746,22 +746,35 @@ class PfCatcherForm:
         questionType=2
       elif answerCnt==0:
         questionType=3      
-
-      self.questions+=[{'Question':question,'QuestionType':questionType,'IsRight':isRight,'Answers':rightAnswers}]
       
-      # urlItem=item.select('.content-bottom a')[0]
-      # title=urlItem.get_text()
-      # url=urlItem.get('href')
+      if showAnswerText!='\n':
+        #旧版本显示了答案
+        self.questions+=[{'Question':question,'QuestionType':questionType,'IsRight':isRight,'Answers':rightAnswers}]
+      else:
+        #新版本没有显示答案,要从上次的正确答案里面找
+        hasAnswer=0
+        getScoreText=item.parent.parent.select('div.show-answer div div span')[0].get_text()
 
-      # btnItem=item.select('.content .img .study-status')
-      # if len(btnItem)>0:
-      #   btn=btnItem[0].get_text()
-      # else:
-      #   btn=''
-      # if btn=="已完成":
-      #   btn="重新学习"
+        if getScoreText!='本题得分：0':
+          hasAnswer=1
+        else:
+          hasAnswer=0
 
-      # self.lessons+=[{'title':title,'btn':btn,'url':url}]
+        if hasAnswer:
+          newAnswerDoms=item.parent.parent.select('input[checked=checked]')
+          for newAnswerDom in newAnswerDoms:
+            newAnswer=newAnswerDom.parent.parent.select('.answer-options')[0].get_text()
+            rightAnswers+=[newAnswer]
+            
+          if len(rightAnswers)>1:
+            questionType=2
+          elif len(rightAnswers)==0:
+            questionType=3     
+          elif len(rightAnswers)==1:
+            questionType=1     
+
+          self.questions+=[{'Question':question,'QuestionType':questionType,'IsRight':isRight,'Answers':rightAnswers}]
+        #新版本没有显示答案,要从上次的正确答案里面找 end
       
     self.pageInput.insert(1.0,self.questions)
     self.lessonInput.insert(1.0,self.answers)
@@ -783,7 +796,7 @@ class PfCatcherForm:
         # row = cursor.fetchone()
       if isExist==0:
         questionId=uuid.uuid4()
-        sql = "insert into game_question (QuestionId,Question,QuestionType,IsRight)values('{0}','{1}',{2},{3})".format(questionId,question['Question'],question['QuestionType'],question['IsRight'])
+        sql = "insert into game_question (QuestionId,Question,QuestionType,IsRight,CreateDate)values('{0}','{1}',{2},{3},getdate())".format(questionId,question['Question'],question['QuestionType'],question['IsRight'])
         
         try:
           cursor.execute(sql)   #执行sql语句
@@ -798,6 +811,9 @@ class PfCatcherForm:
     connect.close()
 
   def answerPage(self):#是否登陆失效
+    
+    # handles = (self.pfCatcher.driver.window_handles)
+    # self.pfCatcher.driver.switch_to_window(handles[len(handles)-1])
 
     lessonPage=self.pfCatcher.getHtml()      
 
@@ -805,7 +821,7 @@ class PfCatcherForm:
     self.questions=[]
     self.answers=[]
 
-    items = soup.select('div.question')  
+    items = soup.select('div.question')  # question o-question
     
     connect = pymssql.connect('121.199.2.204', 'sa', 'luluSKIcom', 'SellGirl.Game')  #建立连接
     if connect:
