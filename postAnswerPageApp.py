@@ -785,7 +785,7 @@ class PfCatcherForm:
 
     for question in self.questions:
       cursor = connect.cursor()   #创建一个游标对象,python里的sql语句都要通过cursor来执行
-      sql ="select Question from game_question where Question='{0}'".format(question['Question'])
+      sql ="select Question from game_question where Question='{0}' and QuestionType={1}".format(question['Question'],question['QuestionType'])
       cursor.execute(sql)   #执行sql语句
       row = cursor.fetchone()  #读取查询结果,
       isExist=0
@@ -804,9 +804,10 @@ class PfCatcherForm:
         except BaseException as e:
           print(e)
         for answer in question['Answers']:
-          sql = "insert into game_answer (AnswerId,QuestionId,Answer)values('{0}','{1}','{2}')".format(uuid.uuid4(),questionId,answer)
+          sql = "insert into game_answer (AnswerId,QuestionId,Answer,CreateDate)values('{0}','{1}','{2}',getdate())".format(uuid.uuid4(),questionId,answer)
           cursor.execute(sql)   #执行sql语句
           connect.commit()  #提交
+      #以后可能要考虑一种情况,同名题目,答题数据可能有相似或包含等关系
     cursor.close()   
     connect.close()
 
