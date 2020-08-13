@@ -69,10 +69,14 @@ if __name__=='__main__':
   config.read_file(conf_file)
 
   currentPcDeskImg=config.get("sysInfo","currentPcDeskImg")
+  pcDeskImgUpdateTime=config.get("sysInfo","pcDeskImgUpdateTime")
   conf_file.close()
 
-  newestPcDeskImg=requests.get('https://pay.sellgirl.com:44303/getpcdeskimgname').text
-  if newestPcDeskImg!=currentPcDeskImg:
+  responseTest=requests.get('https://pay.sellgirl.com:44303/getpcdeskimgname').text
+  newestPcDeskImgJson=json.loads(responseTest)
+  newestPcDeskImg=newestPcDeskImgJson.get('data').get('imgName')
+  lastModified=newestPcDeskImgJson.get('data').get('lastModified')
+  if newestPcDeskImg!=currentPcDeskImg or str(lastModified)!=pcDeskImgUpdateTime:
     #开机时换一次
     # download_image('wallpaper','https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1597297112077&di=9869dc1ad502363bfbdeba6b72b259be&imgtype=0&src=http%3A%2F%2Ft8.baidu.com%2Fit%2Fu%3D1484500186%2C1503043093%26fm%3D79%26app%3D86%26f%3DJPEG%3Fw%3D1280%26h%3D853')
     download_image('wallpaper','https://pay.sellgirl.com:44303/pcdeskimg.jpg')
@@ -86,6 +90,7 @@ if __name__=='__main__':
     config.read_file(conf_file)
     conf_file.close()
     config.set("sysInfo","currentPcDeskImg",newestPcDeskImg)
+    config.set("sysInfo","pcDeskImgUpdateTime",str(lastModified))
 
     file_write = open("changePcBackgroundImg_config.ini","w")
     config.write(file_write) 

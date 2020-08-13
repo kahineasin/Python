@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['changePcBackgroundImg.py'],
+a = Analysis(['.'],
              pathex=['E:\\my_proj\\python'],
              binaries=[],
              datas=[],
@@ -21,7 +21,7 @@ exe = EXE(pyz,
           a.scripts,
           [],
           exclude_binaries=True,
-          name='changePcBackgroundImg',
+          name='',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
@@ -34,4 +34,4 @@ coll = COLLECT(exe,
                strip=False,
                upx=True,
                upx_exclude=[],
-               name='changePcBackgroundImg')
+               name='')
